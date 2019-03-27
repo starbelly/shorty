@@ -17,7 +17,8 @@ defmodule Shorty.Web do
     # Option Notes: 
     #   - binary: we want our packets in binaries
     #   - active: we want to handle send/recv of packets ourselves
-    #   - packet: We expect http packages and would like the erlang packet encode/decoder
+    #   - packet: We expect to recv and send http packages and 
+    #             would like the erlang packet encode/decoder
     #             to handle wrapping/unwrapping for us
 
     opts = [
@@ -32,12 +33,10 @@ defmodule Shorty.Web do
     # We will create as many acceptors as we have schedulers... a lagom number of acceptors. 
     num_acceptors = :erlang.system_info(:schedulers)
 
-    # Note the the simpler scheduler option... if we were to decide to increase the number of
-    # acceptors, say * 2, we'd have to assign every two processes per scheduler
 
     spawn_acceptors = fn i ->
       name = String.to_atom("acceptor_number_#{i}")
-      pid = :erlang.spawn_opt(__MODULE__, :accept, [socket, i], [:link, {:scheduler, i}])
+      pid = :erlang.spawn_opt(__MODULE__, :accept, [socket, i], [:link])
 
       Process.register(
         pid,
@@ -53,7 +52,7 @@ defmodule Shorty.Web do
     # TODO: Error handling and supervison. We should have workers and a supervisor dedicated to listening.
 
     {:ok, socket} = :gen_tcp.accept(listen_socket)
-    Process.spawn(__MODULE__, :read, [socket, %Shorty.Conn{}], [{:scheduler, id}])
+    Process.spawn(__MODULE__, :read, [socket, %Shorty.Conn{}], [])
 
     # Block and wait again
     accept(listen_socket, id)
