@@ -1,6 +1,6 @@
 # Shorty
 
-**TODO: Add description**
+This is an example repo of creating your own URL shortner using erlang/OTP.
 
 ## Installation
 
@@ -19,3 +19,6 @@ Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_do
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at [https://hexdocs.pm/shorty](https://hexdocs.pm/shorty).
 
+
+TODO: 
+   - all the things!
