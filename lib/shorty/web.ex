@@ -77,6 +77,7 @@ defmodule Shorty.Web do
       {:ok, :http_eoh} ->
         :gen_tcp.send(socket, header_and_content(200, form_string()))
         :gen_tcp.close(socket)
+        IO.inspect(conn)
 
       {:ok, {:http_request, method, {:abs_path, path}, {1, 1}}} ->
         read(socket, %{conn | method: method, path: path})
@@ -97,7 +98,7 @@ defmodule Shorty.Web do
     <html>
       <body>
         <h2>Shorty</h2>
-         <form action="/">
+         <form action="/" method="post">
            <input type="text" name="url" value="" placeholder="url">
            <br><br>
            <input type="submit" value="Submit">
