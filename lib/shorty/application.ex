@@ -9,7 +9,7 @@ defmodule Shorty.Application do
     # List all child processes to be supervised
     children = [
       # Starts a worker by calling: Shorty.Worker.start_link(arg)
-      # {Shorty.Worker, arg}
+      {Shorty.Web, []}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
