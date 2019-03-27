@@ -53,13 +53,13 @@ defmodule Shorty.Web do
     # TODO: Error handling and supervison. We should have workers and a supervisor dedicated to listening.
 
     {:ok, socket} = :gen_tcp.accept(listen_socket)
-    Process.spawn(__MODULE__, :read, [socket], [{:scheduler, id}])
+    Process.spawn(__MODULE__, :read, [socket, %Shorty.Conn{}], [{:scheduler, id}])
 
     # Block and wait again
     accept(listen_socket, id)
   end
 
-  def read(socket) do
+  def read(socket, %Shorty.Conn{} = conn) do
     # TODO: Error handling and supervision. This could be spun up in a transient process 
     # under a seperate supervisor and it should be. 
 
@@ -71,13 +71,18 @@ defmodule Shorty.Web do
     # use a callback provided via config and make use of eex. We also naievely assume everything
     # will go right and so we hardcode a status of 200 in for the moment. 
 
+    # TODO: conn work - We need to scoop up the rest of the headers, parse params, etc.  
+
     case :gen_tcp.recv(socket, 0) do
       {:ok, :http_eoh} ->
         :gen_tcp.send(socket, header_and_content(200, form_string()))
         :gen_tcp.close(socket)
 
+      {:ok, {:http_request, method, {:abs_path, path}, {1, 1}}} ->
+        read(socket, %{conn | method: method, path: path})
+
       {:ok, _data} ->
-        read(socket)
+        read(socket, conn)
     end
   end
 
